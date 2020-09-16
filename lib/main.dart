@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/cart.dart';
+import 'package:my_shop/cart_page.dart';
 import 'package:my_shop/product_reader.dart';
-import 'product.dart';
 import 'product_detail_page.dart';
 
 void main() {
@@ -19,9 +20,6 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: 'Каталог'),
     );
   }
-
-  ProductReader reader = ProductReader('data/data.json');
-  List<Product> data;
 }
 
 class MyHomePage extends StatefulWidget {
@@ -35,19 +33,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ProductReader reader = ProductReader('data/data.json');
-  List<Product> data = [];
-
+  final cart = Cart();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+                icon: const Icon(Icons.shopping_cart),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CartPage()));
+                })
+          ],
         ),
         body: FutureBuilder(
             future: reader.loadProduct(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                data = snapshot.data;
+                var data = snapshot.data;
                 return Center(
                     child: new ListView.builder(
                   itemBuilder: (BuildContext context, int index) {
@@ -76,11 +81,39 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     textAlign: TextAlign.center,
                                                   )),
                                               Text(
-                                                data[index].price,
+                                                data[index].price.toString() +
+                                                    " ₽",
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
+                                              ),
+                                              RawMaterialButton(
+                                                child: Icon(
+                                                    Icons.add_shopping_cart),
+                                                shape: CircleBorder(),
+                                                onPressed: () {
+                                                  Cart().append(data[index]);
+
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        Future.delayed(
+                                                            Duration(
+                                                                milliseconds:
+                                                                    500), () {
+                                                          Navigator.of(context)
+                                                              .pop(true);
+                                                        });
+                                                        return AlertDialog(
+                                                          content: Icon(
+                                                            Icons.done,
+                                                            size: 80,
+                                                          ),
+                                                          shape: CircleBorder(),
+                                                        );
+                                                      });
+                                                },
                                               )
                                             ],
                                           ))))
@@ -91,11 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ProductDetailPage(
-                                        data[index].id,
-                                        data[index].name,
-                                        data[index].price,
-                                        data[index].description)))
+                                    builder: (context) =>
+                                        ProductDetailPage(data[index])))
                           },
                         ));
                   },
