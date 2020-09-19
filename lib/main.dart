@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:my_shop/cart.dart';
 import 'package:my_shop/cart_page.dart';
+import 'package:my_shop/database.dart';
+import 'package:my_shop/favorite.dart';
 import 'package:my_shop/product_reader.dart';
+import 'favorite_icon.dart';
 import 'product_detail_page.dart';
 
 void main() {
@@ -34,6 +39,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   ProductReader reader = ProductReader('data/data.json');
   final cart = Cart();
+  final favoriteIcons = {
+    false: Icon(Icons.favorite_border),
+    true: Icon(Icons.favorite)
+  };
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,44 +97,52 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
-                                              RawMaterialButton(
-                                                child: Icon(
-                                                    Icons.add_shopping_cart),
-                                                shape: CircleBorder(),
-                                                onPressed: () {
-                                                  Cart().append(data[index]);
+                                              Row(children: [
+                                                RawMaterialButton(
+                                                  child: Icon(
+                                                      Icons.add_shopping_cart),
+                                                  shape: CircleBorder(),
+                                                  onPressed: () {
+                                                    Cart().append(data[index]);
 
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        Future.delayed(
-                                                            Duration(
-                                                                milliseconds:
-                                                                    500), () {
-                                                          Navigator.of(context)
-                                                              .pop(true);
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          Future.delayed(
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      500), () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(true);
+                                                          });
+                                                          return AlertDialog(
+                                                            content: Icon(
+                                                              Icons.done,
+                                                              size: 80,
+                                                            ),
+                                                            shape:
+                                                                CircleBorder(),
+                                                          );
                                                         });
-                                                        return AlertDialog(
-                                                          content: Icon(
-                                                            Icons.done,
-                                                            size: 80,
-                                                          ),
-                                                          shape: CircleBorder(),
-                                                        );
-                                                      });
-                                                },
-                                              )
+                                                  },
+                                                ),
+                                                FavoriteIcon(data[index].id)
+                                              ])
                                             ],
                                           ))))
                             ],
                           ),
                           color: Colors.white,
-                          onPressed: () => {
+                          onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        ProductDetailPage(data[index])))
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ProductDetailPage(data[index])))
+                                .then((value) {
+                              setState(() {});
+                            });
                           },
                         ));
                   },

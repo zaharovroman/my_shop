@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop/cart.dart';
+import 'package:my_shop/favorite_icon.dart';
 import 'package:my_shop/product.dart';
 
 class ProductDetailPage extends StatelessWidget {
@@ -58,7 +59,8 @@ class ProductDetailPage extends StatelessWidget {
                                           shape: CircleBorder(),
                                         );
                                       });
-                                })
+                                }),
+                            FavoriteIcon(product.id)
                           ])),
                   Text(
                     product.description,

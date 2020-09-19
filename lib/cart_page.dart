@@ -62,6 +62,7 @@ class _CartPageState extends State<CartPage> {
                                                     0) {
                                                   showDialog(
                                                       context: context,
+                                                      barrierDismissible: false,
                                                       builder: (context) {
                                                         return AlertDialog(
                                                           title: Text(
